@@ -1,8 +1,13 @@
+"main application"
+
 import sys
-from util.init import init, should_init
-from flask import Flask
+import traceback
+from flask import Flask, request
 from flask_cors import CORS
-from util.extensions import socketio
+
+from util.extensions import socketio, chat, debug
+from util.init import init, should_init
+from graph.graph import respond
 
 app = Flask(__name__)
 
@@ -10,13 +15,33 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 socketio.init_app(app, cors_allowed_origins="*")
-root_path = ""
+ROOT_PATH = ""
+
+@app.route('/chat', methods=['POST'])
+def chat_with_agent():
+    """ Respond to a chat message """
+    print("chat endpoint")
+    user_message = request.json.get('message')
+    thread_id = request.json.get('thread_id')
+    if not user_message:
+        chat([], "No message provided")
+        return '', 200
+    try:
+        debug([], f"Received user message: {user_message}")
+        debug([], f"Thread ID: {thread_id}")
+        respond(user_message, ROOT_PATH, thread_id)
+        return '', 200
+    except Exception as e:
+        chat([], str(e))
+        print(e)
+        traceback.print_exc()
+        return '', 200
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        root_path = sys.argv[1]
-        if should_init(root_path):
-            init(root_path)
+        ROOT_PATH = sys.argv[1]
+        if should_init(ROOT_PATH):
+            init(ROOT_PATH)
     else:
         print("Please specify a workspace directory path")
         socketio.stop()
