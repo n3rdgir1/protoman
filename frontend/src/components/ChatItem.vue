@@ -30,6 +30,7 @@ export default {
   padding: 10px;
   margin: 5px 0;
   border-radius: 5px;
+  max-width: calc(100% - 80px);
 }
 .chat-item-bot {
   background-color: #e0e0e0;
@@ -39,11 +40,10 @@ export default {
   background-color: #0084ff;
   color: white;
   text-align: right;
+  margin-left: auto;
 }
-
 .chat-item-debug {
   background-color: #ffa200;
-  text-align: right;
+  text-align: left;
 }
-/* Add more sender-specific styles as needed */
 </style>
