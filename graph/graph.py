@@ -85,6 +85,6 @@ def history(thread_id, base_dir):
             'thread_id': thread_id,
             'created_at': item.created_at,
             'next': item.next,
-            'parent_checkpint_id': (item.parent_config or {}).get('configurable', {}).get('checkpoint_id'),
+            'parent_checkpoint_id': (item.parent_config or {}).get('configurable', {}).get('checkpoint_id'),
             'chat': chat_difference(item.values.get('chat', []), find_parent(item, history_list).values.get('chat', []) if find_parent(item, history_list) else [])
         } for item in history_list]
