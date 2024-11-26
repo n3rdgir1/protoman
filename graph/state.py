@@ -25,6 +25,7 @@ class State(TypedDict):
     base_dir: str
     user_input: str
     chat: List[str]
+    need_input: bool
 
     ask: str
     plan: List[Step]

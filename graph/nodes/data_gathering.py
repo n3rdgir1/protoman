@@ -52,18 +52,18 @@ def data_gathering(state: State):
 
     parsed = parser.invoke(response.choices[0].message.content)
     messages = debug(messages, f"Response: {parsed}")
+    need_input = False
     if parsed.questions:
-        stage = 'data_gathering'
+        need_input = True
         messages = chat(messages, "I have some questions for you:")
         for question in parsed.questions:
             messages = chat(messages, question)
     else:
-        stage = 'create_plan'
         messages = chat(messages,
                         "I have the information I need, moving on to formulating the plan.")
     return {
         **state,
         'chat': messages,
         'scratchpad': parsed.notes,
-        'stage': stage,
+        'need_input': need_input,
     }
