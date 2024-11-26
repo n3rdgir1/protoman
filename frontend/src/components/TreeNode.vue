@@ -1,6 +1,6 @@
 <template>
     <div class="node">
-      <div class="details">Next: {{ node.next }}</div>
+      <div class="details">Node: {{ parent?.next }}</div>
       <div class="chat">
         <ChatItem v-for="chat in node.chat" :key="chat.id" :sender="chat.sender" :text="chat.text" />
       </div>
@@ -32,6 +32,9 @@ import ChatItem from './ChatItem.vue';
       children() {
         const kids = this.nodes.filter(n => n.parent_checkpoint_id === this.node.checkpoint_id);
         return kids
+      },
+      parent() {
+        return this.nodes.find(n => n.checkpoint_id === this.node.parent_checkpoint_id);
       }
     }
   }
