@@ -23,7 +23,7 @@ def route_start(state):
     else:
         return DECLINE
 
-def graph_builder():
+def graph_builder(start_node):
     """Build the graph for the chatbot"""
     builder = StateGraph(State)
 
@@ -42,12 +42,24 @@ def graph_builder():
     builder.add_edge(DECLINE, COMPLETE)
     builder.add_edge(GREET, COMPLETE)
     builder.add_edge(COMPLETE, END)
+
+    if start_node:
+        builder.set_entry_point(start_node)
     return builder
 
 def respond(user_message, base_dir, thread_id):
     """Generate a response to a user message"""
-    builder = graph_builder()
     with SqliteSaver.from_conn_string(f"{base_dir}/.protoman/checkpointer.sqlite") as memory:
+        latest_state = history(thread_id, base_dir)[0]
+
+        # Check if 'next' is present and not empty
+        if latest_state and 'next' in latest_state and latest_state['next']:
+            start_node = latest_state['next'][0]
+        else:
+            start_node = None
+        builder = graph_builder(start_node)
+
+        # Compile the graph with the start_node
         graph = builder.compile(checkpointer=memory, debug=False)
 
         graph.get_graph().draw_mermaid_png(output_file_path=f"{base_dir}/.protoman/graph.png")
@@ -59,7 +71,7 @@ def respond(user_message, base_dir, thread_id):
 
 def history(thread_id, base_dir):
     """Get the chat history for a given thread"""
-    builder = graph_builder()
+    builder = graph_builder(None)
     config = {"configurable": {"thread_id": thread_id}}
     with SqliteSaver.from_conn_string(f"{base_dir}/.protoman/checkpointer.sqlite") as memory:
         graph = builder.compile(checkpointer=memory)
