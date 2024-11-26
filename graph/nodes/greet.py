@@ -13,7 +13,8 @@ def greet(state: State):
         ],
     )
 
-    print(state)
-
-    messages = chat([], response.choices[0].message.content)
-    return {**state, 'chat': messages, 'ask': None, 'user_input': None}
+    messages = chat(state.get('chat', []), response.choices[0].message.content)
+    return {
+        **state,
+        'chat': messages,
+    }

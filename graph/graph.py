@@ -12,6 +12,7 @@ CONTINUE="continue"
 GREET="greet"
 DECLINE="decline"
 DATA_GATHERING="data_gathering"
+COMPLETE="complete"
 
 def route_start(state):
     """Route the user question to the appropriate node."""
@@ -33,10 +34,14 @@ def graph_builder():
 
     builder.add_node(GREET, greet)
     builder.add_node(DECLINE, decline)
-    builder.add_node(DATA_GATHERING, data_gathering)
+    builder.add_node(COMPLETE, complete)
 
-    builder.add_edge(DECLINE, END)
-    builder.add_edge(GREET, END)
+    builder.add_node(DATA_GATHERING, data_gathering)
+    builder.add_edge(DATA_GATHERING, COMPLETE)
+
+    builder.add_edge(DECLINE, COMPLETE)
+    builder.add_edge(GREET, COMPLETE)
+    builder.add_edge(COMPLETE, END)
     return builder
 
 def respond(user_message, base_dir, thread_id):

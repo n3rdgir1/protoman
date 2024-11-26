@@ -61,8 +61,9 @@ def data_gathering(state: State):
         stage = 'create_plan'
         messages = chat(messages,
                         "I have the information I need, moving on to formulating the plan.")
-    return {**state,
-            'chat': messages,
-            'scratchpad': parsed.notes,
-            'stage': stage,
+    return {
+        **state,
+        'chat': messages,
+        'scratchpad': parsed.notes,
+        'stage': stage,
     }
