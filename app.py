@@ -2,12 +2,12 @@
 
 import sys
 import traceback
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 from util.extensions import socketio, chat, debug
 from util.init import init, should_init
-from graph.graph import respond
+from graph.graph import respond, history
 
 app = Flask(__name__)
 
@@ -36,6 +36,12 @@ def chat_with_agent():
         print(e)
         traceback.print_exc()
         return '', 200
+
+@app.route('/history/<thread_id>', methods=['GET'])
+def get_history(thread_id):
+    """ Get the chat history for a given thread """
+    history_data = history(thread_id, ROOT_PATH)
+    return jsonify(history_data)
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

@@ -56,3 +56,21 @@ def respond(user_message, base_dir, thread_id):
             {"user_input": user_message, 'base_dir': base_dir, 'git_sha': sha},
             {"configurable": {"thread_id": thread_id}}
         )
+
+def history(thread_id, base_dir):
+    """Get the chat history for a given thread"""
+    builder = graph_builder()
+    config = {"configurable": {"thread_id": thread_id}}
+    with SqliteSaver.from_conn_string(f"{base_dir}/.protoman/checkpointer.sqlite") as memory:
+        graph = builder.compile(checkpointer=memory)
+        return [{
+            'values': {
+                **item.values,
+                'chat': item.values.get('chat', [''])[-1],
+            },
+            'config': item.config['configurable'],
+            'created_at': item.created_at,
+            'next': item.next,
+            'parent_config': (item.parent_config or {'configurable': None})['configurable'],
+            'chat_id': len(item.values.get('chat', [])) - 1,
+        } for item in list(graph.get_state_history(config))]
