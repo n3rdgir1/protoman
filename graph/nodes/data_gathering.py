@@ -16,6 +16,11 @@ class Questions(BaseModel):
 def data_gathering(state: State):
     """Gather data for the plan"""
     formatting = """{"questions": ["question1", "question2", ...], "notes": "notes"}"""
+    messages = state.get('chat', [])
+    if state.get('ask') is None:
+        state['ask'] = state['user_input']
+        messages = messages + [{'text': state['user_input'], 'sender': 'user', 'id': len(messages)}]
+    scratchpad = state.get('scratchpad', '')
     system = f"""{PERSONA}
 
         In order to have an effective pairing session, you must first create a plan for your coding tasks.
@@ -26,10 +31,10 @@ def data_gathering(state: State):
         If you have all the information necessary for your plan, return an empy list.
 
         Here is the conversation so far:
-        {state['chat']}
+        {messages}
 
         Here is your scratchpad:
-        {state['scratchpad']}
+        {scratchpad}
 
         Output your questions and any of your notes that might be useful after receiving your answers in the following format:
         {formatting}
@@ -46,7 +51,7 @@ def data_gathering(state: State):
     )
 
     parsed = parser.invoke(response.choices[0].message.content)
-    messages = debug(state['chat'], f"Response: {parsed}")
+    messages = debug(messages, f"Response: {parsed}")
     if parsed.questions:
         stage = 'data_gathering'
         messages = chat(messages, "I have some questions for you:")
