@@ -111,7 +111,11 @@ def history(thread_id, base_dir):
 
         def chat_difference(current_chat, parent_chat):
             parent_chat_ids = {chat_item['id'] for chat_item in parent_chat}
-            return [chat_item for chat_item in current_chat if chat_item['id'] not in parent_chat_ids]
+            return [
+                chat_item
+                for chat_item in current_chat
+                if chat_item['id'] not in parent_chat_ids
+            ]
 
         return [{
             'user_input': item.values.get('user_input', ''),
@@ -120,5 +124,8 @@ def history(thread_id, base_dir):
             'created_at': item.created_at,
             'next': item.next,
             'parent_checkpoint_id': (item.parent_config or {}).get('configurable', {}).get('checkpoint_id'),
-            'chat': chat_difference(item.values.get('chat', []), find_parent(item, history_list).values.get('chat', []) if find_parent(item, history_list) else [])
+            'chat': chat_difference(
+                item.values.get('chat', []),
+                find_parent(item, history_list).values.get('chat', []) if find_parent(item, history_list) else []
+            ),
         } for item in history_list]
