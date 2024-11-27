@@ -57,9 +57,6 @@ export default {
         html: marked(message)
       }
       this.messages.push(messageToAdd)
-      this.$nextTick(() => {
-        this.scrollToBottom()
-      })
     },
   },
   mounted() {
@@ -70,11 +67,11 @@ export default {
     }
 
     this.$socket.on('chat', (message) => {
-      this.addMessage.addMessage(message, 'bot')
+      this.addMessage(message, 'bot')
     })
 
     this.$socket.on('debug', (message) => {
-      this.addMessage.addMessage(message, 'debug')
+      this.addMessage(message, 'debug')
     })
 
     this.$socket.on('terminal', (message) => {
