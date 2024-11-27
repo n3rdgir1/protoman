@@ -9,12 +9,12 @@ def greet(state: State):
     response = client.chat.completions.create(
         model=deployment_name,
         messages=[
-            {"role": "user", "content": state['user_input']}
+            {"role": "user", "content": state['ask']}
         ],
     )
 
-    messages = chat(state.get('chat', []), response.choices[0].message.content)
+    messages = [chat(response.choices[0].message.content)]
     return {
         **state,
-        'chat': messages,
+        'chat': state['chat'] + messages,
     }

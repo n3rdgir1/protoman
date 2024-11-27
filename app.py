@@ -24,15 +24,15 @@ def chat_with_agent():
     user_message = request.json.get('message')
     thread_id = request.json.get('thread_id')
     if not user_message:
-        chat([], "No message provided")
+        chat("No message provided")
         return '', 200
     try:
-        debug([], f"Received user message: {user_message}")
-        debug([], f"Thread ID: {thread_id}")
+        debug(f"Received user message: {user_message}")
+        debug(f"Thread ID: {thread_id}")
         respond(user_message, ROOT_PATH, thread_id)
         return '', 200
     except Exception as e:
-        chat([], str(e))
+        chat(str(e))
         print(e)
         traceback.print_exc()
         return '', 200

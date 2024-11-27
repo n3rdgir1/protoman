@@ -5,10 +5,10 @@ from util.extensions import chat
 
 def complete(state: State):
     """Reset the state after the flow is completed"""
-    messages = chat(state['chat'], "Is there anything else I can help you with?")
+    messages = [chat("Is there anything else I can help you with?")]
     return {
         **state,
-        'chat': messages,
+        'chat': state['chat'] + messages,
         'ask': None,
         'user_input': None,
         'plan': [],

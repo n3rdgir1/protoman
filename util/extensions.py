@@ -20,14 +20,14 @@ def terminal_output(output):
     "Emit the terminal output"
     socketio.emit(TERMINAL, f'{output}')
 
-def chat(messages, message):
+def chat(message):
     "Emit the chat message"
     socketio.emit(CHAT, f'{message}')
     print("CHAT", message)
-    return messages + [{'sender': 'bot', 'text': message, 'id': uuid4(),}]
+    return {'sender': 'bot', 'text': message, 'id': uuid4(),}
 
-def debug(messages, message):
+def debug(message):
     "Emit the debug message"
     socketio.emit(DEBUG, f'{message}')
     print("DEBUG", message)
-    return messages + [{'sender': 'debug', 'text': message, 'id': uuid4(),}]
+    return {'sender': 'debug', 'text': message, 'id': uuid4(),}

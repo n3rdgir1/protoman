@@ -17,10 +17,10 @@ class Questions(BaseModel):
 def data_gathering(state: State):
     """Gather data for the plan"""
     formatting = """{"questions": ["question1", "question2", ...], "notes": "notes"}"""
-    messages = state.get('chat', [])
+    messages = []
     if state.get('ask') is None:
         state['ask'] = state['user_input']
-        messages = messages + [{'text': state['user_input'], 'sender': 'user', 'id': uuid4()}]
+        messages.append([{'text': state['user_input'], 'sender': 'user', 'id': uuid4()}])
     scratchpad = state.get('scratchpad', '')
     system = f"""{PERSONA}
 
@@ -52,16 +52,15 @@ def data_gathering(state: State):
     )
 
     parsed = parser.invoke(response.choices[0].message.content)
-    messages = debug(messages, f"Response: {parsed}")
+    messages.append(debug(f"Response: {parsed}"))
     need_input = False
     if parsed.questions:
         need_input = True
-        messages = chat(messages, "I have some questions for you:")
+        messages.append(chat("I have some questions for you:"))
         for question in parsed.questions:
-            messages = chat(messages, question)
+            messages.append(chat( question))
     else:
-        messages = chat(messages,
-                        "I have the information I need, moving on to formulating the plan.")
+        messages.append(chat("I have the information I need, moving on to formulating the plan."))
     return {
         **state,
         'chat': messages,
