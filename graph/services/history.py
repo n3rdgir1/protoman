@@ -10,7 +10,6 @@ def history(thread_id, base_dir):
     with SqliteSaver.from_conn_string(f"{base_dir}/.protoman/checkpointer.sqlite") as memory:
         graph = builder.compile(checkpointer=memory)
         history_list = list(graph.get_state_history(config))
-        print(history_list[0])
 
         def find_parent(item, history_list):
             parent_config = item.parent_config
