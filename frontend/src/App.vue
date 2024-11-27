@@ -5,10 +5,15 @@
       <button @click="tab = 1">History</button>
     </div>
     <div v-if="tab === 0">
-      <ChatComponent messages="messages" threadId="threadId"/>
+      <ChatComponent
+        :messages="messages"
+        :threadId="threadId"
+        @add-message="addMessage"
+        @new-thread="newThread"
+      />
     </div>
     <div v-else>
-      <HistoryTree threadId="threadId"/>
+      <HistoryTree :threadId="threadId"/>
     </div>
   </div>
 </template>
@@ -42,6 +47,7 @@ export default {
       localStorage.setItem('threadId', this.threadId)
       console.log('New thread ID:', this.threadId)
       this.terminalOutput = ''
+      this.messages = []
     },
     addMessage(message, sender, id) {
       const messageToAdd = {
