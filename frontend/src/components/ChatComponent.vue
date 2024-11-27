@@ -6,7 +6,7 @@
     </label>
     <div class="message-box">
       <ChatItem
-        v-for="message in messages"
+        v-for="message in filteredMessages"
         :key="message.id"
         :sender="message.sender"
         :text="message.text"
@@ -44,6 +44,31 @@ export default {
       showDebug: false
     }
   },
+  computed: {
+    filteredMessages() {
+      if (this.showDebug) {
+        console.log('all messages')
+        return this.messages
+      }
+      console.log('filtered messages')
+      return this.messages.filter(message => message.sender !== 'debug')
+    }
+  },
+  watch: {
+    messages() {
+      this.$nextTick(() => {
+        this.scrollToBottom();
+      });
+    },
+    showDebug() {
+      // This will trigger the computed property to re-evaluate
+      console.log('toggled')
+      this.$forceUpdate()
+    }
+  },
+  mounted() {
+    this.scrollToBottom();
+  },
   methods: {
     async sendMessage() {
       this.$nextTick(() => {
@@ -56,6 +81,7 @@ export default {
         sender: 'user',
       }
       this.$emit('add-message', userMessage.text, userMessage.sender)
+      this.newMessage = ''
 
       try {
         await fetch('http://127.0.0.1:5000/chat', {
