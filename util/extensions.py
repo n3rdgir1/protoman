@@ -1,6 +1,7 @@
 "Socket extension and helper funcitons"
 
 from flask_socketio import SocketIO
+from uuid import uuid4
 
 socketio = SocketIO(cors_allowed_origins="*")
 
@@ -23,10 +24,10 @@ def chat(messages, message):
     "Emit the chat message"
     socketio.emit(CHAT, f'{message}')
     print("CHAT", message)
-    return messages + [{'sender': 'bot', 'text': message, 'id': len(messages),}]
+    return messages + [{'sender': 'bot', 'text': message, 'id': uuid4(),}]
 
 def debug(messages, message):
     "Emit the debug message"
     socketio.emit(DEBUG, f'{message}')
     print("DEBUG", message)
-    return messages + [{'sender': 'debug', 'text': message, 'id': len(messages),}]
+    return messages + [{'sender': 'debug', 'text': message, 'id': uuid4(),}]

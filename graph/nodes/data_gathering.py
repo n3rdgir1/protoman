@@ -2,6 +2,7 @@
 from typing import List, Optional
 from langchain_core.output_parsers import PydanticOutputParser
 from pydantic import BaseModel
+from uuid import uuid4
 
 from graph.state import State
 from util.client import client, deployment_name
@@ -19,7 +20,7 @@ def data_gathering(state: State):
     messages = state.get('chat', [])
     if state.get('ask') is None:
         state['ask'] = state['user_input']
-        messages = messages + [{'text': state['user_input'], 'sender': 'user', 'id': len(messages)}]
+        messages = messages + [{'text': state['user_input'], 'sender': 'user', 'id': uuid4()}]
     scratchpad = state.get('scratchpad', '')
     system = f"""{PERSONA}
 

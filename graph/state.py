@@ -23,7 +23,6 @@ class PlanResponse(TypedDict):
 class State(TypedDict):
     """State of the LangGraph"""
     base_dir: str
-    user_input: str
     chat: List[str]
     need_input: bool
 

@@ -2,6 +2,7 @@
 import os
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.sqlite import SqliteSaver
+from uuid import uuid4
 
 from graph.state import State
 from graph.nodes import *
@@ -43,8 +44,6 @@ def graph_builder():
     builder.add_edge(GREET, COMPLETE)
     builder.add_edge(COMPLETE, END)
 
-    # if start_node:
-        # builder.set_entry_point(start_node)
     return builder
 
 def respond(user_message, base_dir, thread_id):
@@ -52,22 +51,44 @@ def respond(user_message, base_dir, thread_id):
     builder = graph_builder()
     with SqliteSaver.from_conn_string(f"{base_dir}/.protoman/checkpointer.sqlite") as memory:
         history_list = history(thread_id, base_dir)
-
+        graph_config = {"configurable": {"thread_id": thread_id}}
         graph = builder.compile(checkpointer=memory, debug=False, interrupt_after=[DATA_GATHERING])
 
         graph.get_graph().draw_mermaid_png(output_file_path=f"{base_dir}/.protoman/graph.png")
         sha = os.popen(f"cd {base_dir} && git rev-parse HEAD").read().strip()
-        initial_state = {"user_input": user_message, 'base_dir': base_dir, 'git_sha': sha}
+        initial_state = {
+            'base_dir': base_dir,
+            'git_sha': sha,
+            'need_input': False,
+            'plan': [],
+            'scratchpad': ''
+        }
 
-        # TODO: set chat in state based on historical state if it exists
+        # set chat in based on historical state
+        history_count = len(history_list)
+        if history_count == 0:
+            # Set up initial state with user message
+            initial_state['chat'] = [{'id': uuid4(), 'sender': 'user', 'text': user_message}]
+            initial_state['ask'] = user_message
+        else:
+            graph.update_state(
+                config=graph_config,
+                values={
+                    'chat': history_list[0]['chat'] + [{
+                        'id': uuid4(),
+                        'sender': 'user',
+                        'text': user_message
+                    }]
+                }
+            )
 
         # Continue after last breakpoint if there is one
-        if len(history_list) > 0 and history_list[0]['next'] != ():
+        if history_count > 0 and history_list[0]['next'] != ():
             initial_state = None
 
         graph.invoke(
             initial_state,
-            {"configurable": {"thread_id": thread_id}}
+            graph_config
         )
 
 def history(thread_id, base_dir):
