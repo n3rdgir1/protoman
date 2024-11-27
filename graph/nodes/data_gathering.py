@@ -18,9 +18,6 @@ def data_gathering(state: State):
     """Gather data for the plan"""
     formatting = """{"questions": ["question1", "question2", ...], "notes": "notes"}"""
     messages = []
-    if state.get('ask') is None:
-        state['ask'] = state['user_input']
-        messages.append([{'text': state['user_input'], 'sender': 'user', 'id': uuid4()}])
     scratchpad = state.get('scratchpad', '')
     system = f"""{PERSONA}
 
@@ -32,7 +29,7 @@ def data_gathering(state: State):
         If you have all the information necessary for your plan, return an empy list.
 
         Here is the conversation so far:
-        {messages}
+        {state['chat']}
 
         Here is your scratchpad:
         {scratchpad}
@@ -61,9 +58,10 @@ def data_gathering(state: State):
             messages.append(chat( question))
     else:
         messages.append(chat("I have the information I need, moving on to formulating the plan."))
+
     return {
         **state,
-        'chat': messages,
+        'chat': state['chat'] + messages,
         'scratchpad': parsed.notes,
         'need_input': need_input,
     }

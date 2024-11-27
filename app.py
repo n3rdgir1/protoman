@@ -7,7 +7,7 @@ from flask_cors import CORS
 
 from util.extensions import socketio, chat, debug
 from util.init import init, should_init
-from graph.graph import respond, history
+from graph.services import respond, history
 
 app = Flask(__name__)
 
