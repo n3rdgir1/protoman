@@ -1,6 +1,8 @@
 <template>
+    <h2>History</h2>
     <div>
       <TreeNode v-for="node in rootNodes" :key="node.id" :node="node" :nodes="nodes" />
+      <div v-if="rootNodes.length === 0">No history available</div>
     </div>
 </template>
 
@@ -11,6 +13,12 @@
     name: 'HistoryTree',
     components: {
       TreeNode
+    },
+    props: {
+      threadId: {
+        type: String,
+        required: true
+      }
     },
     data() {
       return {
@@ -23,7 +31,7 @@
       }
     },
     created() {
-      fetch('http://127.0.0.1:5000/history/11')//, { mode: 'no-cors' })
+      fetch(`http://127.0.0.1:5000/history/${this.threadId}`)//, { mode: 'no-cors' })
         .then(response => response.json())
         .then(data => {
           this.nodes = data;

@@ -8,7 +8,17 @@
 
 <script>
 export default {
-  name: 'ChatComponent'
+  name: 'ChatComponent',
+  props: {
+    threadId: {
+      type: String,
+      required: true
+    },
+    messages: {
+      type: Array,
+      required: true
+    }
+  },
 };
 </script>
 
