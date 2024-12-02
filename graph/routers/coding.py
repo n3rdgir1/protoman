@@ -3,7 +3,7 @@ from langchain_core.output_parsers import PydanticOutputParser
 
 from util.client import client, deployment_name
 from graph.state import State
-from graph.routers.route_query import RouteQuery, ROUTER_FORMAT
+from graph.routers.route_start import RouteStart, ROUTER_FORMAT
 
 
 def is_coding(state: State):
@@ -19,7 +19,7 @@ def is_coding(state: State):
         When the user is asking about a topic that is definitely not coding related, decline.
         {ROUTER_FORMAT}"""
 
-    parser = PydanticOutputParser(pydantic_object=RouteQuery)
+    parser = PydanticOutputParser(pydantic_object=RouteStart)
 
     response = client.chat.completions.create(
         model=deployment_name,
@@ -33,4 +33,4 @@ def is_coding(state: State):
         return parser.invoke(response.choices[0].message.content)
     except Exception:
         print(response)
-        return RouteQuery(datasource="decline")
+        return RouteStart(datasource="decline")

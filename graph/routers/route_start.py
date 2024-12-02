@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 ROUTER_FORMAT = """Respond with JSON data that includes the datasource key and the appropriate value of "continue", "greet", or "decline"."""
 
 
-class RouteQuery(BaseModel):
+class RouteStart(BaseModel):
     """Route the user question to the appropriate node."""
 
     datasource: Literal["continue", "decline", "greet"] = Field(

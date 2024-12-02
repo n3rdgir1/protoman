@@ -3,7 +3,7 @@ from langgraph.graph import StateGraph, END
 
 from graph.state import State
 from graph.nodes import *
-from graph.routers import is_coding, RouteQuery
+from graph.routers import is_coding, RouteStart
 
 
 CONTINUE="continue"
@@ -19,7 +19,7 @@ COMPLETE="complete"
 def route_start(state):
     """Route the user question to the appropriate node."""
     print('evaluating start')
-    source: RouteQuery = is_coding(state)
+    source: RouteStart = is_coding(state)
     if source.datasource in [CONTINUE, GREET]:
         return source.datasource
     else:
