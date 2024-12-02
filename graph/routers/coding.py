@@ -1,10 +1,21 @@
 "Route user question regarding coding asks"
+from typing import Literal
 from langchain_core.output_parsers import PydanticOutputParser
+from pydantic import BaseModel, Field
 
 from util.client import client, deployment_name
 from graph.state import State
-from graph.routers.route_start import RouteStart, ROUTER_FORMAT
 
+ROUTER_FORMAT = """Respond with JSON data that includes the datasource key and the appropriate value of "continue", "greet", or "decline"."""
+
+
+class RouteStart(BaseModel):
+    """Route the user question to the appropriate node."""
+
+    datasource: Literal["continue", "decline", "greet"] = Field(
+        default=...,
+        description="Given a user question choose to continue to the next step, end the conversation, or generate a generic response."
+    )
 
 def is_coding(state: State):
     """Route the user question to the appropriate node."""
