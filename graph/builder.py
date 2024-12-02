@@ -3,7 +3,7 @@ from langgraph.graph import StateGraph, END
 
 from graph.state import State
 from graph.nodes import *
-from graph.routers import is_coding, RouteStart
+from graph.routers import *
 
 
 CONTINUE="continue"
@@ -24,6 +24,14 @@ def route_start(state):
         return source.datasource
     else:
         return DECLINE
+
+def route_approve_plan(state):
+    """Route the user approval to the appropriate node."""
+    approval: RouteApproval = is_approved(state)
+    if approval.approval == "accept":
+        return COMPLETE
+    else:
+        return CREATE_PLAN
 
 def route_data_gathering(state):
     "Ask the user for input only if needed"
@@ -59,7 +67,8 @@ def graph_builder():
         {DATA_COLLECTION: DATA_COLLECTION, CREATE_PLAN: CREATE_PLAN})
     builder.add_edge(DATA_COLLECTION, DATA_GATHERING)
     builder.add_edge(CREATE_PLAN, APPROVE_PLAN)
-    builder.add_edge(APPROVE_PLAN, COMPLETE)
+    builder.add_conditional_edges(APPROVE_PLAN, route_approve_plan,
+        {COMPLETE: COMPLETE, CREATE_PLAN: CREATE_PLAN})
 
     builder.add_edge(DECLINE, COMPLETE)
     builder.add_edge(GREET, COMPLETE)
