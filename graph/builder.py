@@ -11,6 +11,8 @@ GREET="greet"
 DECLINE="decline"
 DATA_GATHERING="data_gathering"
 DATA_COLLECTION="data_collection"
+CREATE_PLAN="create_plan"
+APPROVE_PLAN="approve_plan"
 COMPLETE="complete"
 
 
@@ -28,9 +30,13 @@ def route_data_gathering(state):
     if state['need_input']:
         return DATA_COLLECTION
     else:
-        return COMPLETE
+        return CREATE_PLAN
 
 def data_collection_node(state):
+    "Placeholder node for user input"
+    return state
+
+def approve_plan_node(state):
     "Placeholder node for user input"
     return state
 
@@ -47,9 +53,13 @@ def graph_builder():
 
     builder.add_node(DATA_GATHERING, data_gathering)
     builder.add_node(DATA_COLLECTION, data_collection_node)
+    builder.add_node(CREATE_PLAN, create_plan)
+    builder.add_node(APPROVE_PLAN, approve_plan_node)
     builder.add_conditional_edges(DATA_GATHERING, route_data_gathering,
-        {DATA_COLLECTION: DATA_COLLECTION, COMPLETE: COMPLETE})
+        {DATA_COLLECTION: DATA_COLLECTION, CREATE_PLAN: CREATE_PLAN})
     builder.add_edge(DATA_COLLECTION, DATA_GATHERING)
+    builder.add_edge(CREATE_PLAN, APPROVE_PLAN)
+    builder.add_edge(APPROVE_PLAN, COMPLETE)
 
     builder.add_edge(DECLINE, COMPLETE)
     builder.add_edge(GREET, COMPLETE)

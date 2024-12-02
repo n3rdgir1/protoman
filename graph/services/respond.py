@@ -1,8 +1,9 @@
+"hanldes the response to the user message and picking up in the graph where left off"
 import os
 from uuid import uuid4
 from langgraph.checkpoint.sqlite import SqliteSaver
 
-from graph.builder import graph_builder, DATA_COLLECTION
+from graph.builder import APPROVE_PLAN, graph_builder, DATA_COLLECTION
 
 
 def respond(user_message, base_dir, thread_id):
@@ -13,7 +14,7 @@ def respond(user_message, base_dir, thread_id):
         graph = builder.compile(
             checkpointer=memory,
             debug=True,
-            interrupt_before=[DATA_COLLECTION]
+            interrupt_before=[DATA_COLLECTION, APPROVE_PLAN],
         )
         history_list = list(graph.get_state_history(graph_config))
 
