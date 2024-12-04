@@ -58,7 +58,6 @@ def create_plan(state: State):
     )
     messages = []
     parsed = parser.invoke(response.choices[0].message.content)
-    messages.append(debug(f"Plan: {parsed}"))
     messages.append(chat("Here is the plan I have formulated:"))
     for i, step in enumerate(parsed.steps):
         messages.append(chat(f"{i + 1}. {step.description}"))
@@ -66,7 +65,7 @@ def create_plan(state: State):
         if step.path:
             messages.append(debug(f"Path: {step.path}"))
         if step.content:
-            messages.append(debug(f"Content: {step.content}"))
+            messages.append(debug(step.content))
     messages.append(chat("Would you like me to execute this plan?"))
     steps = [
         {

@@ -1,7 +1,5 @@
 <template>
-  <div :class="['chat-item', senderClass]">
-    {{ text }}
-  </div>
+  <pre :class="['chat-item', senderClass]">{{ text }}</pre>
 </template>
 
 <script>
@@ -31,6 +29,8 @@ export default {
   margin: 5px 0;
   border-radius: 5px;
   max-width: calc(100% - 80px);
+  word-break: break-word;
+  text-wrap: wrap;
 }
 .chat-item-bot {
   background-color: #e0e0e0;
