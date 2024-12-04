@@ -13,6 +13,7 @@ DATA_GATHERING="data_gathering"
 DATA_COLLECTION="data_collection"
 CREATE_PLAN="create_plan"
 APPROVE_PLAN="approve_plan"
+RUN_PLAN="run_plan"
 COMPLETE="complete"
 
 
@@ -29,7 +30,7 @@ def route_approve_plan(state):
     """Route the user approval to the appropriate node."""
     approval: RouteApproval = is_approved(state)
     if approval.approval == "accept":
-        return COMPLETE
+        return RUN_PLAN
     else:
         return CREATE_PLAN
 
@@ -63,12 +64,14 @@ def graph_builder():
     builder.add_node(DATA_COLLECTION, data_collection_node)
     builder.add_node(CREATE_PLAN, create_plan)
     builder.add_node(APPROVE_PLAN, approve_plan_node)
+    builder.add_node(RUN_PLAN, run_plan)
     builder.add_conditional_edges(DATA_GATHERING, route_data_gathering,
         {DATA_COLLECTION: DATA_COLLECTION, CREATE_PLAN: CREATE_PLAN})
     builder.add_edge(DATA_COLLECTION, DATA_GATHERING)
     builder.add_edge(CREATE_PLAN, APPROVE_PLAN)
     builder.add_conditional_edges(APPROVE_PLAN, route_approve_plan,
-        {COMPLETE: COMPLETE, CREATE_PLAN: CREATE_PLAN})
+        {RUN_PLAN: RUN_PLAN, CREATE_PLAN: CREATE_PLAN})
+    builder.add_edge(RUN_PLAN, COMPLETE)
 
     builder.add_edge(DECLINE, COMPLETE)
     builder.add_edge(GREET, COMPLETE)

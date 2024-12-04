@@ -21,7 +21,7 @@ class Plan(BaseModel):
 
 def create_plan(state: State):
     """Create a coding plan"""
-    formatting = """Return a JSON string in the format of {"steps": [{"action": string, "path": string "content": string}, ...], formulated: "True|False", reason: str}.
+    formatting = """Return a JSON string in the format of {"steps": [{"action": string, "path": string, "content": string}, ...], formulated: "True|False", reason: str}.
     steps: list - A list of steps to take to complete the plan.
     action: string - The action to take such as "ask_pair", "create_file", or the string argument to python's `os.system` call.
     path: string - The path to the file or directory to create or modify.
@@ -36,6 +36,7 @@ def create_plan(state: State):
         You will have access to perform actions that you can complete with a python `os.system` command.
         Formulate your actions as inputs to `os.system` commands.
         In addition, you can ask your pair to perform actions by using the "ask_pair" action. You can utilize this for things like starting servers or checking outputs.
+        You are working in a git repository, so ensure you have a .gitignore file with the appropriate entries.
         Just output the JSON in the format specified below, not any of your thoughts or notes.
 
         Here is the conversation so far:
@@ -66,7 +67,7 @@ def create_plan(state: State):
             messages.append(debug(f"Path: {step.path}"))
         if step.content:
             messages.append(debug(step.content))
-    messages.append(chat("Would you like me to execute this plan?"))
+    messages.append(chat("Would you like me to run this plan?"))
     steps = [
         {
             'action': step.action,
