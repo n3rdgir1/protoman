@@ -1,14 +1,19 @@
 <template>
     <div class="node">
-      <div class="details">
-        <span>Node: {{ parent?.next }}</span>
-      </div>
-      <div class="chat">
-        <ChatItem v-for="chat in node.chat" :key="chat.id" :sender="chat.sender" :text="chat.text" />
-      </div>
-      <div class="rewind" v-if="parent">
-        <button @click="rewind">Rewind</button>
-      </div>
+      <template v-if="parent">
+        <details :class="['details', currentClass]">
+          <summary>{{ parent?.next[0] || "root" }}</summary>
+          <div class="chat">
+            <ChatItem v-for="chat in node.chat" :key="chat.id" :sender="chat.sender" :text="chat.text" />
+          </div>
+          <div class="rewind">
+            <button @click="rewind">Rewind</button>
+          </div>
+        </details>
+      </template>
+      <template v-else>
+        <div class="details root">root</div>
+      </template>
       <div v-if="children.length" class="children-container">
         <TreeNode v-for="child in children" :key="child.id" :node="child" :nodes="nodes" />
       </div>
@@ -40,6 +45,9 @@ import ChatItem from './ChatItem.vue';
       },
       parent() {
         return this.nodes.find(n => n.checkpoint_id === this.node.parent_checkpoint_id);
+      },
+      currentClass() {
+        return this.node.current ? 'current' : '';
       }
     },
     methods: {
@@ -77,9 +85,16 @@ import ChatItem from './ChatItem.vue';
   background-color: #f0f0f0;
   padding: 20px 10px;
   border: 1px solid #ccc;
-  width: 500px;
   margin: 0 auto;
   text-align: center;
+}
+
+details, .root {
+  width: 200px;
+}
+
+details[open] {
+  width: 500px;
 }
 
 .rewind {
@@ -109,6 +124,12 @@ import ChatItem from './ChatItem.vue';
 
 .rewind button {
   position: relative;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: #ecf0f1;
+  cursor: pointer;
 }
 
 .chat {
@@ -123,5 +144,9 @@ import ChatItem from './ChatItem.vue';
 
 .chat-item-debug{
   display: none;
+}
+
+.current {
+  background-color: #06ad0b;
 }
 </style>

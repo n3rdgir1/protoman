@@ -3,7 +3,7 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 from graph.builder import graph_builder
 
 
-def history(thread_id, base_dir):
+def history_tree(thread_id, base_dir):
     """Get the chat history for a given thread"""
     builder = graph_builder()
     config = {"configurable": {"thread_id": thread_id}}
@@ -29,6 +29,8 @@ def history(thread_id, base_dir):
                 if chat_item['id'] not in parent_chat_ids
             ]
 
+        latest = history_list[0]
+
         return [{
             'user_input': item.values.get('user_input', ''),
             'checkpoint_id': item.config['configurable']['checkpoint_id'],
@@ -40,4 +42,5 @@ def history(thread_id, base_dir):
                 item.values.get('chat', []),
                 find_parent(item, history_list).values.get('chat', []) if find_parent(item, history_list) else []
             ),
+            'current': item.config['configurable']['checkpoint_id'] == latest.config['configurable']['checkpoint_id']
         } for item in history_list]

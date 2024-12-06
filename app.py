@@ -7,7 +7,7 @@ from flask_cors import CORS
 
 from util.extensions import socketio, chat, debug
 from util.init import init, should_init
-from graph.services import respond, history, rewind
+from graph.services import respond, history_tree, rewind
 
 app = Flask(__name__)
 
@@ -40,7 +40,7 @@ def chat_with_agent():
 @app.route('/history/<thread_id>', methods=['GET'])
 def get_history(thread_id):
     """ Get the chat history for a given thread """
-    history_data = history(thread_id, ROOT_PATH)
+    history_data = history_tree(thread_id, ROOT_PATH)
     return jsonify(history_data)
 
 @app.route('/history/chat', methods=['POST'])
