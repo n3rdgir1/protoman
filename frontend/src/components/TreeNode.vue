@@ -51,7 +51,6 @@ import ChatItem from './ChatItem.vue';
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-              message: 'Rewind request',
               threadId: this.node.thread_id,
               checkpointId: this.node.checkpoint_id
             })

@@ -1,12 +1,11 @@
 "hanldes the response to the user message and picking up in the graph where left off"
 import os
-from uuid import uuid4
 from langgraph.checkpoint.sqlite import SqliteSaver
 
 from graph.builder import APPROVE_PLAN, graph_builder, DATA_COLLECTION
 
 
-def rewind(user_message, base_dir, thread_id, checkpoint_id):
+def rewind(base_dir, thread_id, checkpoint_id):
     """Generate a response to a user message"""
     builder = graph_builder()
     with SqliteSaver.from_conn_string(f"{base_dir}/.protoman/checkpointer.sqlite") as memory:

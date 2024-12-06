@@ -46,17 +46,12 @@ def get_history(thread_id):
 @app.route('/history/chat', methods=['POST'])
 def rewind_history():
     """ Respond to a chat message """
-    user_message = request.json.get('message')
     thread_id = request.json.get('threadId')
     checkpoint_id = request.json.get('checkpointId')
-    if not user_message:
-        chat("No message provided")
-        return '', 200
     try:
-        debug(f"Received user message: {user_message}")
         debug(f"Thread ID: {thread_id}")
         debug(f"Checkpoint ID: {checkpoint_id}")
-        rewind(user_message, ROOT_PATH, thread_id, checkpoint_id)
+        rewind(ROOT_PATH, thread_id, checkpoint_id)
         return '', 200
     except Exception as e:
         chat(str(e))
