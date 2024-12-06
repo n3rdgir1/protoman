@@ -7,7 +7,7 @@ from flask_cors import CORS
 
 from util.extensions import socketio, chat, debug
 from util.init import init, should_init
-from graph.services import respond, history
+from graph.services import respond, history, rewind
 
 app = Flask(__name__)
 
@@ -42,6 +42,27 @@ def get_history(thread_id):
     """ Get the chat history for a given thread """
     history_data = history(thread_id, ROOT_PATH)
     return jsonify(history_data)
+
+@app.route('/history/chat', methods=['POST'])
+def rewind_history():
+    """ Respond to a chat message """
+    user_message = request.json.get('message')
+    thread_id = request.json.get('threadId')
+    checkpoint_id = request.json.get('checkpointId')
+    if not user_message:
+        chat("No message provided")
+        return '', 200
+    try:
+        debug(f"Received user message: {user_message}")
+        debug(f"Thread ID: {thread_id}")
+        debug(f"Checkpoint ID: {checkpoint_id}")
+        rewind(user_message, ROOT_PATH, thread_id, checkpoint_id)
+        return '', 200
+    except Exception as e:
+        chat(str(e))
+        print(e)
+        traceback.print_exc()
+        return '', 200
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
